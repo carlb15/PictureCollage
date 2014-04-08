@@ -3,6 +3,7 @@
 
     <string name="app_name">PictureCollage</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
-
+    <string name="save">Save</string>
+    <string name="clean">Clean</string>
+    
 </resources>
