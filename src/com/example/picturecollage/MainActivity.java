@@ -23,23 +23,78 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
+/**
+ * 
+ * @author Carl Barbee
+ * @assignment Homework 4 Implementing an Android app that takes pictures, shows
+ *             results, allows dragging of image views and lets you combine
+ *             multiple pictures into one and save onto persistent storage.
+ */
 @SuppressLint("NewApi")
 public class MainActivity extends Activity implements SurfaceTextureListener {
+	/**
+	 * Scrollview for the app.
+	 */
 	private ScrollView mScrollView;
+	/**
+	 * TextureView for the app.
+	 */
 	private TextureView mTextureView;
+	/**
+	 * Imageview for the app.
+	 */
 	private ImageView mImageView;
+	/**
+	 * Array list of image views for the app.
+	 */
 	private ArrayList<ImageView> mImageViewArray;
+	/**
+	 * Id field for each image view.
+	 */
 	private int mId;
+	/**
+	 * Camera for the app.
+	 */
 	private Camera mCamera;
+	/**
+	 * Relative layout for the app.
+	 */
 	private RelativeLayout mRelativeLayout;
+	/**
+	 * Parameters for the app.
+	 */
 	private RelativeLayout.LayoutParams mParams;
+	/**
+	 * Height field for each image view.
+	 */
 	private int mHeight = 200;
+	/**
+	 * Width field for each image view.
+	 */
 	private int mWidth = 240;
+	/**
+	 * X fields for the onTouch
+	 */
 	private float mPrevTouchX, mDX, mPosX, mPrevX;
+	/**
+	 * Y fields for the onTouch
+	 */
 	private float mPrevTouchY, mDY, mPosY, mPrevY;
+	/**
+	 * Row field for adding new elements to the layout.
+	 */
 	private int row = 1;
+	/**
+	 * Column field for adding new elements to the layout.
+	 */
 	private int column = 1;
+	/**
+	 * Collage name for each new image file added.
+	 */
 	private String collageName = "CollageName";
+	/**
+	 * Value to add for each new image file added.
+	 */
 	private int value = 1;
 
 	@SuppressLint("NewApi")
@@ -55,6 +110,9 @@ public class MainActivity extends Activity implements SurfaceTextureListener {
 	private void startTextureViewOnTouchListener() {
 		mTextureView.setOnTouchListener(new TextureView.OnTouchListener() {
 
+			/**
+			 * Overriding the onTouch method for adding new image views.
+			 */
 			@Override
 			public boolean onTouch(View arg0, MotionEvent me) {
 				if (me.getAction() == MotionEvent.ACTION_DOWN) {
@@ -78,6 +136,7 @@ public class MainActivity extends Activity implements SurfaceTextureListener {
 
 					// Align with new image view.
 					if (column != 5) {
+						// Moves the image view next to previous image view.
 						mParams.addRule(RelativeLayout.RIGHT_OF,
 								mImageViewArray.get(mId - 1).getId());
 						mParams.addRule(RelativeLayout.ALIGN_TOP,
@@ -86,6 +145,7 @@ public class MainActivity extends Activity implements SurfaceTextureListener {
 								mImageViewArray.get(mId - 1).getId());
 					}
 					else {
+						// Moves the image view to the next row.
 						mParams.addRule(RelativeLayout.BELOW, mImageViewArray.get(mId - 3)
 								.getId());
 					}
@@ -109,6 +169,9 @@ public class MainActivity extends Activity implements SurfaceTextureListener {
 		});
 	}
 
+	/**
+	 * Creates the default layouts for the app. Called when the app starts up and
+	 */
 	private void createStartingViewsAndLayouts() {
 		mId = 1;
 		column = 1;
@@ -120,17 +183,21 @@ public class MainActivity extends Activity implements SurfaceTextureListener {
 		mTextureView.setRotation(0f);
 
 		mParams = new RelativeLayout.LayoutParams(mWidth, mHeight);
-
 		mRelativeLayout = new RelativeLayout(this);
 		mRelativeLayout.addView(mTextureView, mParams);
-
 		mScrollView = new ScrollView(this);
 		mScrollView.addView(mRelativeLayout);
 		setContentView(mScrollView);
 	}
 
+	/**
+	 * Combines the images together.
+	 * 
+	 * @param bitmap
+	 *          The bitmap images.
+	 * @return
+	 */
 	private Bitmap combineImageIntoOne(ArrayList<Bitmap> bitmap) {
-
 		int w = 0, h = 0;
 		for (int i = 0; i < bitmap.size(); i++) {
 			if (i < bitmap.size() - 1) {
@@ -150,6 +217,11 @@ public class MainActivity extends Activity implements SurfaceTextureListener {
 		return temp;
 	}
 
+	/**
+	 * Enables the drag feature when there are only 4 image views in the activity.
+	 * 
+	 * @param imgView
+	 */
 	private void enableDragFeatureForImageView(ImageView imgView) {
 		imgView.setOnTouchListener(new TextureView.OnTouchListener() {
 
@@ -187,6 +259,9 @@ public class MainActivity extends Activity implements SurfaceTextureListener {
 		});
 	}
 
+	/**
+	 * Disables the image views drag feature once five image views are displayed.
+	 */
 	private void disableDragFeatureAndRealignImagViews() {
 
 		column = 1;
@@ -201,20 +276,32 @@ public class MainActivity extends Activity implements SurfaceTextureListener {
 		}
 	}
 
+	/**
+	 * Reconfigures the image views after 5 image views are displayed to the
+	 * original gird layout.
+	 * 
+	 * @param img
+	 *          The image to be reconfigured
+	 * @param prevImageIndex
+	 *          The previous image views index in the image view array.
+	 */
 	private void reconfigureImageViews(ImageView img, int prevImageIndex) {
 		mParams = new RelativeLayout.LayoutParams(
 				RelativeLayout.LayoutParams.WRAP_CONTENT,
 				RelativeLayout.LayoutParams.WRAP_CONTENT);
 
+		// Check for first image view in grid layout.
 		if (prevImageIndex == 0) {
 			column++;
 		}
 		else if (column < 5 && row == 1) {
+			// First row of image views.
 			mParams.addRule(RelativeLayout.RIGHT_OF,
 					mImageViewArray.get(prevImageIndex - 1).getId());
 			column++;
 		}
 		else if (column < 5 && row > 1) {
+			// Row > 1
 			mParams.addRule(RelativeLayout.RIGHT_OF,
 					mImageViewArray.get(prevImageIndex - 1).getId());
 			mParams.addRule(RelativeLayout.BELOW,
@@ -222,6 +309,7 @@ public class MainActivity extends Activity implements SurfaceTextureListener {
 			column++;
 		}
 		else {
+			// Moving the image view to the next row.
 			mParams.addRule(RelativeLayout.BELOW,
 					mImageViewArray.get(prevImageIndex - 4).getId());
 			row++;
@@ -245,15 +333,18 @@ public class MainActivity extends Activity implements SurfaceTextureListener {
 				RelativeLayout.LayoutParams.WRAP_CONTENT,
 				RelativeLayout.LayoutParams.WRAP_CONTENT);
 
+		// First image view.
 		if (mId == 1) {
 			column++;
 		}
-		else if (column < 5 && row == 1 && mId != 1) { // First row
+		else if (column < 5 && row == 1 && mId != 1) {
+			// First row of image views.
 			mParams.addRule(RelativeLayout.RIGHT_OF, mImageViewArray.get(mId - 2)
 					.getId());
 			column++;
 		}
-		else if (column < 5 && row > 1) { // Rows > 1
+		else if (column < 5 && row > 1) {
+			// Rows > 1
 			mParams.addRule(RelativeLayout.RIGHT_OF, mImageViewArray.get(mId - 2)
 					.getId());
 			mParams.addRule(RelativeLayout.BELOW, mImageViewArray.get(mId - 5)
@@ -261,6 +352,7 @@ public class MainActivity extends Activity implements SurfaceTextureListener {
 			column++;
 		}
 		else {
+			// Moves the image view to the next row.
 			mParams.addRule(RelativeLayout.BELOW, mImageViewArray.get(mId - 5)
 					.getId());
 			row++;
@@ -268,6 +360,9 @@ public class MainActivity extends Activity implements SurfaceTextureListener {
 		}
 	}
 
+	/**
+	 * Setups the drop down menu
+	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
@@ -275,6 +370,9 @@ public class MainActivity extends Activity implements SurfaceTextureListener {
 		return super.onCreateOptionsMenu(menu);
 	}
 
+	/**
+	 * Closes out the camera preview when app pauses
+	 */
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -285,6 +383,9 @@ public class MainActivity extends Activity implements SurfaceTextureListener {
 		}
 	}
 
+	/**
+	 * Setups the camera preview.
+	 */
 	@SuppressLint("NewApi")
 	public void onSurfaceTextureAvailable(SurfaceTexture surface, int width,
 			int height) {
@@ -304,6 +405,9 @@ public class MainActivity extends Activity implements SurfaceTextureListener {
 		// Ignored, Camera does all the work for us
 	}
 
+	/**
+	 * Closes the camera preview when the app is closed.
+	 */
 	public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
 		mCamera.stopPreview();
 		mCamera.release();
@@ -314,6 +418,10 @@ public class MainActivity extends Activity implements SurfaceTextureListener {
 		// Invoked every time there's a new Camera preview frame
 	}
 
+	/**
+	 * The clean option for the app. Clears all the image views from the layout
+	 * and resets the layout to original startup configuration.
+	 */
 	private void clean() {
 		// Clears the views and removes the listeners for each image view.
 		if (mImageViewArray.size() < 5) {
@@ -332,7 +440,25 @@ public class MainActivity extends Activity implements SurfaceTextureListener {
 	}
 
 	/**
-	 * On selecting action bar icons
+	 * Saves the image views as one picture to the gallery on your phone.
+	 */
+	private void save() {
+		ArrayList<Bitmap> bitmap = new ArrayList<Bitmap>();
+		// Save the image views as a collage and save it in the gallery.
+		for (int i = 0; i < mImageViewArray.size(); i++) {
+			bitmap.add(((BitmapDrawable) (mImageViewArray.get(i).getDrawable()))
+					.getBitmap());
+		}
+		// Name the new image an arbitrary file name.
+		Bitmap bmp = combineImageIntoOne(bitmap);
+		MediaStore.Images.Media.insertImage(getContentResolver(), bmp, collageName
+				+ value, "New Collage");
+	}
+
+	/**
+	 * On selecting action bar icons. Clean option clears all the image views and
+	 * save will save the image views as one picture to the gallery section of
+	 * your phone.
 	 * */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -342,15 +468,7 @@ public class MainActivity extends Activity implements SurfaceTextureListener {
 			clean();
 			return true;
 		case R.id.save:
-			ArrayList<Bitmap> bitmap = new ArrayList();
-			// Save the image views as a collage and save it in the gallery.
-			for (int i = 0; i < mImageViewArray.size(); i++) {
-				bitmap.add(((BitmapDrawable) (mImageViewArray.get(i).getDrawable()))
-						.getBitmap());
-			}
-			Bitmap bmp = combineImageIntoOne(bitmap);
-			MediaStore.Images.Media.insertImage(getContentResolver(), bmp,
-					collageName + value, "New Collage");
+			save();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
