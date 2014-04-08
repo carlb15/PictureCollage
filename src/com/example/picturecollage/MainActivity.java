@@ -22,6 +22,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.Toast;
 
 /**
  * 
@@ -445,16 +446,25 @@ public class MainActivity extends Activity implements SurfaceTextureListener {
 	 * Saves the image views as one picture to the gallery on your phone.
 	 */
 	private void save() {
-		ArrayList<Bitmap> bitmap = new ArrayList<Bitmap>();
-		// Save the image views as a collage and save it in the gallery.
-		for (int i = 0; i < mImageViewArray.size(); i++) {
-			bitmap.add(((BitmapDrawable) (mImageViewArray.get(i).getDrawable()))
-					.getBitmap());
+		if (mImageViewArray.size() > 1) {
+			ArrayList<Bitmap> bitmap = new ArrayList<Bitmap>();
+			// Save the image views as a collage and save it in the gallery.
+			for (int i = 0; i < mImageViewArray.size(); i++) {
+				bitmap.add(((BitmapDrawable) (mImageViewArray.get(i).getDrawable()))
+						.getBitmap());
+			}
+
+			// Name the new image an arbitrary file name.
+			Bitmap bmp = combineImageIntoOne(bitmap);
+
+			MediaStore.Images.Media.insertImage(getContentResolver(), bmp,
+					collageName + value, "New Collage");
 		}
-		// Name the new image an arbitrary file name.
-		Bitmap bmp = combineImageIntoOne(bitmap);
-		MediaStore.Images.Media.insertImage(getContentResolver(), bmp, collageName
-				+ value, "New Collage");
+		else {
+			Toast t = Toast.makeText(getApplicationContext(),
+					"Two or more images required", Toast.LENGTH_SHORT);
+			t.show();
+		}
 	}
 
 	/**
