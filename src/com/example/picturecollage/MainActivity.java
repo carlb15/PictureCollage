@@ -409,8 +409,10 @@ public class MainActivity extends Activity implements SurfaceTextureListener {
 	 * Closes the camera preview when the app is closed.
 	 */
 	public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-		mCamera.stopPreview();
-		mCamera.release();
+		if (mCamera != null) {
+			mCamera.stopPreview();
+			mCamera.release();
+		}
 		return true;
 	}
 
